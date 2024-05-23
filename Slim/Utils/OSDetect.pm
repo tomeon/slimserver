@@ -35,7 +35,7 @@ returns a string to indicate the detected operating system currently running Lyr
 =cut
 
 sub OS {
-	return $os->name;
+	__PACKAGE__->init->name;
 }
 
 =head2 init( $newBin)
@@ -48,7 +48,7 @@ sub init {
 	my $newBin = shift;
 
 	if ($os) {
-		return;
+		return $os;
 	}
 
 	# Allow the caller to pass in a new base dir (for test cases);
@@ -128,11 +128,16 @@ sub init {
 	$isWindows = $os->name eq 'win';
 	$isMac     = $os->name eq 'mac';
 	$isLinux = $os->get('os') eq 'Linux';
-}
-
-sub getOS {
 	return $os;
 }
+
+{
+	no strict qw(refs);
+	*getOS = \&init;
+}
+#sub getOS {
+#	__PACKAGE__->init;
+#}
 
 =head2 Backwards compatibility
 
@@ -141,19 +146,19 @@ sub getOS {
 =cut
 
 sub dirsFor {
-	return $os->dirsFor(shift);
+	__PACKAGE__->init->dirsFor(shift);
 }
 
 sub details {
-	return $os->details();
+	__PACKAGE__->init->details();
 }
 
 sub getProxy {
-	return $os->getProxy();
+	__PACKAGE__->init->getProxy();
 }
 
 sub skipPlugins {
-	return $os->skipPlugins();
+	__PACKAGE__->init->skipPlugins();
 }
 
 =head2 isDebian( )
@@ -165,11 +170,11 @@ sub skipPlugins {
 =cut
 
 sub isDebian {
-	return $os->get('isDebian');
+	__PACKAGE__->init->get('isDebian');
 }
 
 sub isRHorSUSE {
-	return $os->get('isRedHat', 'isSuse');
+	__PACKAGE__->init->get('isRedHat', 'isSuse');
 }
 
 sub isWindows {
