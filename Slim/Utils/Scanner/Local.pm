@@ -66,8 +66,10 @@ sub find {
 		$dbh->do("DELETE FROM scanned_files WHERE url = '${file}' OR url LIKE '${file}/%'");
 	}
 
-	stat $path;
+	my @stat = stat $path;
 
+	# Use _ to access the same stat structure from the `stat $path` above;
+	# avoids a redundant stat syscall.
 	if ( -f _ ) {
 		# A single file was passed in, handle it directly here
 		my $types = Slim::Music::Info::validTypeExtensions( $args->{types} || 'audio' );
@@ -83,8 +85,8 @@ sub find {
 
 			$sth->execute(
 				$file,
-				(stat _)[9], # mtime
-				(stat _)[7], # size
+				$stat[9], # mtime
+				$stat[7], # size
 			);
 
 			# Callback that we found 1 file

@@ -239,8 +239,16 @@ sub downloadAsyncDone {
 		return;
 	}
 
+<<<<<<< HEAD
 	if (-s _ != $http->headers->content_length()) {
 		$log->warn( sprintf("Installer file size mismatch: expected size %s bytes, actual size %s bytes", $http->headers->content_length(), -s _) );
+||||||| parent of 293cacfc9 (Reduce the use of `_` in stat calls and file tests)
+	if (-s _ != $http->headers->content_length()) {
+		$log->warn( sprintf("Lyrion Music Server installer file size mismatch: expected size %s bytes, actual size %s bytes", $http->headers->content_length(), -s _) );
+=======
+	if ((my $actual = -s _) != (my $expected = $http->headers->content_length())) {
+		$log->warn( sprintf("Lyrion Music Server installer file size mismatch: expected size %s bytes, actual size %s bytes", $expected, $actual) );
+>>>>>>> 293cacfc9 (Reduce the use of `_` in stat calls and file tests)
 		unlink $tmpFile;
 		return;
 	}

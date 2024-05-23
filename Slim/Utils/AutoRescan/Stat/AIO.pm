@@ -77,8 +77,10 @@ sub check {
 					die "stat of $file failed: $!\n";
 				}
 
+				my @stat = stat _;
+
 				# If mtime has changed, or if filesize has changed (unless it's a dir where size=0)
-				if ( $mtime != (stat _)[9] || ( $size && $size != (stat _)[7] ) ) {
+				if ( $mtime != $stat[9] || ( $size && $size != $stat[7] ) ) {
 					main::DEBUGLOG && $log->is_debug && $log->debug(
 						  "Stat change: $file (cur mtime " . (stat _)[9] . ", db $mtime, "
 						. "cur size: " . (stat _)[7] . ", db $size)"
