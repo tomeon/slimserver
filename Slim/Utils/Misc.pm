@@ -814,7 +814,7 @@ $_ignoredItems{'#snapshot'} = 1;
 # Don't include old Shoutcast recently played items.
 $_ignoredItems{'ShoutcastBrowser_Recently_Played'} = 1;
 
-=head2 fileFilter( $dirname, $item )
+=head2 fileFilter( $dirname, $item, $validRE, $hasStat, $showHidden )
 
 	Verify whether we want to include a file or folder in our search.
 	This helper function is used to guarantee identical filtering across
