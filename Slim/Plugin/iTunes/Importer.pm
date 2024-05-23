@@ -356,6 +356,8 @@ sub handleTrack {
 		# properties directly in iTunes (dumb) - the
 		# actual mtime of the file is updated however.
 
+		# Use _ to access the same stat structure from the `!-r $file` above;
+		# avoids a redundant stat syscall.
 		my $mtime = (stat _)[9];
 		my $ctime = str2time($curTrack->{'Date Added'});
 

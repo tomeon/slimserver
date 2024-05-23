@@ -2515,15 +2515,15 @@ sub _hasChanged {
 
 #	main::DEBUGLOG && $isDebug && $log->debug("Checking for [$filepath] - size & timestamp.");
 
-	# Return if it's a directory - they expire themselves
-	# Todo - move directory expire code here?
-	return 0 if -d $filepath;
 	return 0 if $filepath =~ /\.lnk$/i;
 
 	# See if the file exists
-	#
-	# Reuse _, as we only need to stat() once.
-	if (-e _) {
+	if (-e $filepath) {
+		# Return if it's a directory - they expire themselves
+		# Todo - move directory expire code here?
+		return 0 if -d _;
+
+		my $actualsize = -s _;
 
 		my $filesize  = $track->get('filesize');
 		my $timestamp = $track->get('timestamp');
@@ -2533,7 +2533,7 @@ sub _hasChanged {
 		my $fscheck = 0;
 
 		if ($fsdef) {
-			$fscheck = (-s _ == $filesize);
+			$fscheck = ($actualsize == $filesize);
 		}
 
 		# Now the AGE

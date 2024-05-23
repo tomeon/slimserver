@@ -19,6 +19,7 @@ use File::Spec ();
 use Path::Class ();
 
 use Slim::Music::Info;
+use Slim::Utils::LazyStat;
 use Slim::Utils::Misc;
 use Slim::Utils::Log;
 use Slim::Utils::Prefs;
@@ -60,8 +61,8 @@ sub find {
 	# We save directories for use in various auto-rescan modules
 	my $iter = File::Next::everything( {
 		file_filter    => sub {
-			-f _ && $_ ? Slim::Utils::Misc::fileFilter($File::Next::dir, $_, $types)
-			           : Slim::Utils::Misc::folderFilter($File::Next::dir, 0, $types)
+			-f File::Spec->catfile($File::Next::dir, $_) && $_ ? Slim::Utils::Misc::fileFilter($File::Next::dir, $_, $types)
+									   : Slim::Utils::Misc::folderFilter($File::Next::dir, 0, $types)
 		},
 		descend_filter => sub {
 			$args->{recursive} ? Slim::Utils::Misc::folderFilter($File::Next::dir, 0, $types)
@@ -93,6 +94,8 @@ sub find {
 
 		$progress && $progress->update($file);
 
+		my $stat = Slim::Utils::LazyStat->stat($file);
+
 		if ( main::ISWINDOWS && $file =~ /\.lnk$/i ) {
 			my $orig = $file;
 
@@ -120,7 +123,7 @@ sub find {
 		elsif (
 			main::ISMAC
 			&&
-			(stat _)[7] == 0 # aliases have a 0 size
+			$stat->[7] == 0 # aliases have a 0 size
 			&&
 			(my $alias = Slim::Utils::Misc::pathFromMacAlias($file))
 		) {
@@ -150,15 +153,11 @@ sub find {
 
 		$count++;
 
-		# XXX Not sure why, but sometimes there is no cached stat data available?!
-		if ( !(stat _)[9] ) {
-			stat $file;
-		}
 
 		$sth->execute(
 			Slim::Utils::Misc::fileURLFromPath($file),
-			(stat _)[9], # mtime
-			-d _ ? 0 : (stat _)[7], # size, 0 for directories
+			$stat->[9], # mtime
+			-d $file ? 0 : $stat->[7], # size, 0 for directories
 		);
 
 		return 1;

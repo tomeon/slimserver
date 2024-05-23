@@ -61,9 +61,7 @@ sub watch {
 			for my $event ( $fs->read_events ) {
 				my $file = $event->path;
 
-				stat $file;
-
-				if ( -d _ ) {
+				if ( -d $file ) {
 					# Make sure we care about this directory
 					return unless Slim::Utils::Misc::folderFilter($file);
 				}

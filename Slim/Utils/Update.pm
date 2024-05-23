@@ -233,8 +233,8 @@ sub downloadAsyncDone {
 		return;
 	}
 
-	if (-s _ != $http->headers->content_length()) {
-		$log->warn( sprintf("Lyrion Music Server installer file size mismatch: expected size %s bytes, actual size %s bytes", $http->headers->content_length(), -s _) );
+	if ((my $actual = -s _) != (my $expected = $http->headers->content_length())) {
+		$log->warn( sprintf("Lyrion Music Server installer file size mismatch: expected size %s bytes, actual size %s bytes", $expected, $actual) );
 		unlink $tmpFile;
 		return;
 	}
