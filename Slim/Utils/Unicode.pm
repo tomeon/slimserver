@@ -97,7 +97,10 @@ our (
 		\xff\xfe\x00\x00
 	)/x;
 
-	($lc_ctype, $lc_time) = Slim::Utils::OSDetect->getOS->localeDetails();
+	if ( defined (my $os = Slim::Utils::OSDetect->getOS) ) {
+		($lc_ctype, $lc_time) = $os->localeDetails();
+	}
+	$lc_ctype //= 'utf8';
 
 	# Setup Encode::Guess
 	$Encode::Guess::NoUTFAutoGuess = 1;
