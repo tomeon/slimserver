@@ -21,6 +21,7 @@ use strict;
 
 use base qw(Slim::Utils::Prefs::Base);
 
+use File::Path qw(mkpath);
 use File::Spec::Functions qw(:ALL);
 use YAML::XS;
 
@@ -322,6 +323,8 @@ sub savenow {
 
 	eval {
 		my $path = $class->{'file'} . '.tmp';
+		my $dirname = (splitpath($path))[1];
+		mkpath($dirname);
 
 		open OUT, '>', $path or die "$!";
 		print OUT YAML::XS::Dump($class->{'prefs'});
